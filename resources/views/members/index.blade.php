@@ -13,7 +13,7 @@
     <table class="table table-hover table-bordered text-center">
         <thead class="table-dark">
             <tr>
-                <th>#</th>
+                <th>No</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>
@@ -50,10 +50,10 @@
                     <a href="{{ route('members.edit', $member->id) }}" class="btn btn-warning btn-sm">
                         <i class="bi bi-pencil"></i> Edit
                     </a>
-                    <form action="{{ route('members.destroy', $member->id) }}" method="POST" style="display:inline;">
+                    <form id="delete-form-{{ $member->id }}" action="{{ route('members.destroy', $member->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                        <button type="button" class="btn btn-danger btn-sm btn-delete" data-id="{{ $member->id }}">
                             <i class="bi bi-trash"></i> Delete
                         </button>
                     </form>
@@ -65,5 +65,33 @@
 </div>
 
 @include('layouts.footer')
+
+<!-- SweetAlert2 Script -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const memberId = this.getAttribute('data-id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + memberId).submit();
+                }
+            });
+        });
+    });
+});
+</script>
 
 @endsection
